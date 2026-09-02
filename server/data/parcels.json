@@ -1,0 +1,658 @@
+[
+  {
+    "ulpin": "IN-MH-411001-P1001",
+    "surveyNo": "142/A/1",
+    "village": "Baner",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 1250.50,
+    "areaAcres": 0.309,
+    "pincode": "411045",
+    "status": "Verified",
+    "coordinates": [
+      [18.5585, 73.7890],
+      [18.5592, 73.7895],
+      [18.5588, 73.7905],
+      [18.5581, 73.7900],
+      [18.5585, 73.7890]
+    ],
+    "center": [18.55865, 73.78975],
+    "owner": {
+      "name": "Rajesh Vasantrao Patil",
+      "fatherName": "Vasantrao Patil",
+      "khataNo": "KHT-8842",
+      "sharePercentage": 100,
+      "jointOwners": [],
+      "address": "Flat 402, Green Acres, Baner, Pune",
+      "aadhaarMasked": "XXXX-XXXX-9482",
+      "panMasked": "ABPPP****K"
+    },
+    "registration": {
+      "deedNo": "PN-HAV-2021-49201",
+      "deedType": "Sale Deed",
+      "registrationDate": "2021-11-14",
+      "subRegistrarOffice": "Haveli No. 3, Pune",
+      "declaredValueINR": 18500000,
+      "stampDutyPaidINR": 1110000,
+      "status": "Registered & Verified"
+    },
+    "encumbrance": {
+      "status": "Clear",
+      "mortgageActive": false,
+      "bankName": "None",
+      "mortgageAmountINR": 0,
+      "pendingLitigation": false,
+      "courtCaseNo": null,
+      "nocIssued": true
+    },
+    "tax": {
+      "assessmentNo": "PMC-TAX-2024-99120",
+      "annualTaxINR": 42500,
+      "duesRemainingINR": 0,
+      "status": "Paid",
+      "lastPaymentDate": "2024-04-10",
+      "receiptNo": "REC-8849120"
+    },
+    "landUse": {
+      "zone": "Residential (R-1)",
+      "masterPlan": "PMC Master Plan 2038",
+      "permissibleFSI": 2.1,
+      "category": "Urban Residential"
+    },
+    "buildingPermission": {
+      "permissionNo": "PMC-BP-2022-04812",
+      "status": "Approved",
+      "approvedFSI": 1.95,
+      "sanctionedFloors": "G + 4",
+      "completionCertificateIssued": true
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 15,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "No Active Restrictions"
+    },
+    "utilities": {
+      "waterConnectionId": "PMC-WTR-49102",
+      "powerConsumerNo": "MSEDCL-849201",
+      "sewageAccess": "Connected",
+      "roadWidthMeters": 18
+    }
+  },
+  {
+    "ulpin": "IN-MH-411001-P1002",
+    "surveyNo": "88/2/B",
+    "village": "Aundh",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 3400.00,
+    "areaAcres": 0.840,
+    "pincode": "411007",
+    "status": "Issue Found",
+    "coordinates": [
+      [18.5610, 73.8050],
+      [18.5622, 73.8062],
+      [18.5615, 73.8075],
+      [18.5602, 73.8060],
+      [18.5610, 73.8050]
+    ],
+    "center": [18.5612, 73.8061],
+    "owner": {
+      "name": "Sunita Suresh Deshmukh",
+      "fatherName": "Rameshchandra Kulkarni",
+      "khataNo": "KHT-4912",
+      "sharePercentage": 60,
+      "jointOwners": ["Milind Suresh Deshmukh (40%)"],
+      "address": "Lane 5, Aundh, Pune",
+      "aadhaarMasked": "XXXX-XXXX-1294",
+      "panMasked": "BCDPD****M"
+    },
+    "registration": {
+      "deedNo": "PN-HAV-2018-12049",
+      "deedType": "Gift Deed",
+      "registrationDate": "2018-06-22",
+      "subRegistrarOffice": "Haveli No. 1, Pune",
+      "declaredValueINR": 32000000,
+      "stampDutyPaidINR": 1920000,
+      "status": "Registered"
+    },
+    "encumbrance": {
+      "status": "Active Mortgage & Dispute Flag",
+      "mortgageActive": true,
+      "bankName": "State Bank of India (Aundh Br)",
+      "mortgageAmountINR": 15000000,
+      "pendingLitigation": true,
+      "courtCaseNo": "CIV-SUIT-2023-8841",
+      "nocIssued": false
+    },
+    "tax": {
+      "assessmentNo": "PMC-TAX-2024-10492",
+      "annualTaxINR": 115000,
+      "duesRemainingINR": 230000,
+      "status": "Unpaid Dues",
+      "lastPaymentDate": "2022-03-15",
+      "receiptNo": "REC-4819201"
+    },
+    "landUse": {
+      "zone": "Commercial (C-2)",
+      "masterPlan": "PMC Master Plan 2038",
+      "permissibleFSI": 2.5,
+      "category": "Commercial Mixed Use"
+    },
+    "buildingPermission": {
+      "permissionNo": "PMC-BP-2023-99120",
+      "status": "Violation Found",
+      "approvedFSI": 2.5,
+      "sanctionedFloors": "G + 6",
+      "completionCertificateIssued": false
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 0,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "Litigation Encroachment Flag"
+    },
+    "utilities": {
+      "waterConnectionId": "PMC-WTR-11920",
+      "powerConsumerNo": "MSEDCL-481029",
+      "sewageAccess": "Pending Clearance",
+      "roadWidthMeters": 24
+    }
+  },
+  {
+    "ulpin": "IN-MH-411001-P1003",
+    "surveyNo": "204/1",
+    "village": "Wakad",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 850.00,
+    "areaAcres": 0.210,
+    "pincode": "411057",
+    "status": "Verified",
+    "coordinates": [
+      [18.5980, 73.7620],
+      [18.5986, 73.7625],
+      [18.5983, 73.7634],
+      [18.5976, 73.7629],
+      [18.5980, 73.7620]
+    ],
+    "center": [18.5981, 73.7627],
+    "owner": {
+      "name": "Anil Prakash Kulkarni",
+      "fatherName": "Prakash Kulkarni",
+      "khataNo": "KHT-7712",
+      "sharePercentage": 100,
+      "jointOwners": [],
+      "address": "Datta Mandir Road, Wakad, Pune",
+      "aadhaarMasked": "XXXX-XXXX-4410",
+      "panMasked": "CJKPK****L"
+    },
+    "registration": {
+      "deedNo": "PN-MUL-2022-88192",
+      "deedType": "Sale Deed",
+      "registrationDate": "2022-09-05",
+      "subRegistrarOffice": "Mulshi No. 2",
+      "declaredValueINR": 9500000,
+      "stampDutyPaidINR": 570000,
+      "status": "Registered & Verified"
+    },
+    "encumbrance": {
+      "status": "Clear",
+      "mortgageActive": false,
+      "bankName": "None",
+      "mortgageAmountINR": 0,
+      "pendingLitigation": false,
+      "courtCaseNo": null,
+      "nocIssued": true
+    },
+    "tax": {
+      "assessmentNo": "PCMC-TAX-2024-33102",
+      "annualTaxINR": 28000,
+      "duesRemainingINR": 0,
+      "status": "Paid",
+      "lastPaymentDate": "2024-05-18",
+      "receiptNo": "REC-773102"
+    },
+    "landUse": {
+      "zone": "Residential (R-1)",
+      "masterPlan": "PCMC Development Plan",
+      "permissibleFSI": 1.8,
+      "category": "High Density Residential"
+    },
+    "buildingPermission": {
+      "permissionNo": "PCMC-BP-2023-11029",
+      "status": "Approved",
+      "approvedFSI": 1.75,
+      "sanctionedFloors": "G + 3",
+      "completionCertificateIssued": true
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 30,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "Clear"
+    },
+    "utilities": {
+      "waterConnectionId": "PCMC-WTR-88129",
+      "powerConsumerNo": "MSEDCL-993012",
+      "sewageAccess": "Connected",
+      "roadWidthMeters": 15
+    }
+  },
+  {
+    "ulpin": "IN-MH-411001-P1004",
+    "surveyNo": "52/A",
+    "village": "Hinjawadi",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 6200.00,
+    "areaAcres": 1.532,
+    "pincode": "411057",
+    "status": "Pending Clearance",
+    "coordinates": [
+      [18.5910, 73.7380],
+      [18.5925, 73.7395],
+      [18.5918, 73.7410],
+      [18.5902, 73.7396],
+      [18.5910, 73.7380]
+    ],
+    "center": [18.5913, 73.7395],
+    "owner": {
+      "name": "Apex Tech Infra Solutions Pvt Ltd",
+      "fatherName": "N/A (Corporate Entity)",
+      "khataNo": "KHT-9901",
+      "sharePercentage": 100,
+      "jointOwners": [],
+      "address": "Phase 1, Hinjawadi Rajiv Gandhi IT Park, Pune",
+      "aadhaarMasked": "N/A (CIN: U72200PN2015PTC159012)",
+      "panMasked": "AAACA****G"
+    },
+    "registration": {
+      "deedNo": "PN-MUL-2020-00412",
+      "deedType": "Lease Deed",
+      "registrationDate": "2020-02-11",
+      "subRegistrarOffice": "Mulshi No. 1",
+      "declaredValueINR": 145000000,
+      "stampDutyPaidINR": 8700000,
+      "status": "Under MIDC Verification"
+    },
+    "encumbrance": {
+      "status": "Bank Charge Registered",
+      "mortgageActive": true,
+      "bankName": "HDFC Bank Ltd",
+      "mortgageAmountINR": 85000000,
+      "pendingLitigation": false,
+      "courtCaseNo": null,
+      "nocIssued": true
+    },
+    "tax": {
+      "assessmentNo": "MIDC-TAX-2024-88410",
+      "annualTaxINR": 480000,
+      "duesRemainingINR": 0,
+      "status": "Paid",
+      "lastPaymentDate": "2024-06-01",
+      "receiptNo": "REC-990124"
+    },
+    "landUse": {
+      "zone": "Industrial / IT Park (I-2)",
+      "masterPlan": "MIDC Master Plan",
+      "permissibleFSI": 3.5,
+      "category": "Information Technology Zone"
+    },
+    "buildingPermission": {
+      "permissionNo": "MIDC-BP-2021-00812",
+      "status": "Approved",
+      "approvedFSI": 3.2,
+      "sanctionedFloors": "2B + G + 11",
+      "completionCertificateIssued": false
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 20,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "High Tension Corridor Buffer (10m)"
+    },
+    "utilities": {
+      "waterConnectionId": "MIDC-WTR-00491",
+      "powerConsumerNo": "MSEDCL-HT-44812",
+      "sewageAccess": "Connected (STP Required)",
+      "roadWidthMeters": 30
+    }
+  },
+  {
+    "ulpin": "IN-MH-411001-P1005",
+    "surveyNo": "17/4/1",
+    "village": "Kothrud",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 450.00,
+    "areaAcres": 0.111,
+    "pincode": "411038",
+    "status": "Verified",
+    "coordinates": [
+      [18.5080, 73.8120],
+      [18.5084, 73.8124],
+      [18.5082, 73.8129],
+      [18.5078, 73.8125],
+      [18.5080, 73.8120]
+    ],
+    "center": [18.5081, 73.81245],
+    "owner": {
+      "name": "Madhav Pandurang Joshi",
+      "fatherName": "Pandurang Joshi",
+      "khataNo": "KHT-1290",
+      "sharePercentage": 100,
+      "jointOwners": [],
+      "address": "Rambaug Colony, Kothrud, Pune",
+      "aadhaarMasked": "XXXX-XXXX-7721",
+      "panMasked": "ABJPJ****Q"
+    },
+    "registration": {
+      "deedNo": "PN-HAV-2015-09412",
+      "deedType": "Inheritance Mutation",
+      "registrationDate": "2015-03-30",
+      "subRegistrarOffice": "Haveli No. 2",
+      "declaredValueINR": 11000000,
+      "stampDutyPaidINR": 0,
+      "status": "Verified"
+    },
+    "encumbrance": {
+      "status": "Clear",
+      "mortgageActive": false,
+      "bankName": "None",
+      "mortgageAmountINR": 0,
+      "pendingLitigation": false,
+      "courtCaseNo": null,
+      "nocIssued": true
+    },
+    "tax": {
+      "assessmentNo": "PMC-TAX-2024-00412",
+      "annualTaxINR": 19500,
+      "duesRemainingINR": 0,
+      "status": "Paid",
+      "lastPaymentDate": "2024-04-02",
+      "receiptNo": "REC-119201"
+    },
+    "landUse": {
+      "zone": "Residential (R-1)",
+      "masterPlan": "PMC Master Plan 2038",
+      "permissibleFSI": 1.5,
+      "category": "Old City Residential"
+    },
+    "buildingPermission": {
+      "permissionNo": "PMC-BP-2016-44102",
+      "status": "Approved",
+      "approvedFSI": 1.45,
+      "sanctionedFloors": "G + 2",
+      "completionCertificateIssued": true
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 0,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "Clear"
+    },
+    "utilities": {
+      "waterConnectionId": "PMC-WTR-33912",
+      "powerConsumerNo": "MSEDCL-110294",
+      "sewageAccess": "Connected",
+      "roadWidthMeters": 12
+    }
+  },
+  {
+    "ulpin": "IN-MH-411001-P1006",
+    "surveyNo": "309/2",
+    "village": "Viman Nagar",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 4100.00,
+    "areaAcres": 1.013,
+    "pincode": "411014",
+    "status": "Verified",
+    "coordinates": [
+      [18.5680, 73.9140],
+      [18.5695, 73.9152],
+      [18.5689, 73.9168],
+      [18.5674, 73.9155],
+      [18.5680, 73.9140]
+    ],
+    "center": [18.5684, 73.9153],
+    "owner": {
+      "name": "Skyline Developers LLP",
+      "fatherName": "N/A (LLP Entity)",
+      "khataNo": "KHT-6029",
+      "sharePercentage": 100,
+      "jointOwners": [],
+      "address": "Viman Nagar Main Rd, Pune",
+      "aadhaarMasked": "N/A (LLPIN: AAB-4910)",
+      "panMasked": "AAAFS****H"
+    },
+    "registration": {
+      "deedNo": "PN-HAV-2023-11920",
+      "deedType": "Development Agreement",
+      "registrationDate": "2023-01-19",
+      "subRegistrarOffice": "Haveli No. 4",
+      "declaredValueINR": 240000000,
+      "stampDutyPaidINR": 14400000,
+      "status": "Registered & Verified"
+    },
+    "encumbrance": {
+      "status": "Clear with Consortium NOC",
+      "mortgageActive": true,
+      "bankName": "ICICI Bank Ltd",
+      "mortgageAmountINR": 110000000,
+      "pendingLitigation": false,
+      "courtCaseNo": null,
+      "nocIssued": true
+    },
+    "tax": {
+      "assessmentNo": "PMC-TAX-2024-77120",
+      "annualTaxINR": 380000,
+      "duesRemainingINR": 0,
+      "status": "Paid",
+      "lastPaymentDate": "2024-05-10",
+      "receiptNo": "REC-884012"
+    },
+    "landUse": {
+      "zone": "Commercial (C-1)",
+      "masterPlan": "PMC Development Plan 2038",
+      "permissibleFSI": 3.0,
+      "category": "Commercial Hub"
+    },
+    "buildingPermission": {
+      "permissionNo": "PMC-BP-2023-88192",
+      "status": "Approved",
+      "approvedFSI": 2.9,
+      "sanctionedFloors": "3B + G + 14",
+      "completionCertificateIssued": false
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 0,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "Air Force Station Height Clearance Obtained (45m)"
+    },
+    "utilities": {
+      "waterConnectionId": "PMC-WTR-99012",
+      "powerConsumerNo": "MSEDCL-HT-77102",
+      "sewageAccess": "Connected",
+      "roadWidthMeters": 30
+    }
+  },
+  {
+    "ulpin": "IN-MH-411001-P1007",
+    "surveyNo": "77/1",
+    "village": "Hadapsar",
+    "taluka": "Haveli",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 11200.00,
+    "areaAcres": 2.767,
+    "pincode": "411028",
+    "status": "Issue Found",
+    "coordinates": [
+      [18.4980, 73.9280],
+      [18.4998, 73.9300],
+      [18.4988, 73.9320],
+      [18.4970, 73.9300],
+      [18.4980, 73.9280]
+    ],
+    "center": [18.4984, 73.9300],
+    "owner": {
+      "name": "Pandharinath Tukaram Gaikwad",
+      "fatherName": "Tukaram Gaikwad",
+      "khataNo": "KHT-0042",
+      "sharePercentage": 50,
+      "jointOwners": ["Eknath Tukaram Gaikwad (50%)"],
+      "address": "Gaikwad Vasti, Hadapsar, Pune",
+      "aadhaarMasked": "XXXX-XXXX-8812",
+      "panMasked": "AMJPG****N"
+    },
+    "registration": {
+      "deedNo": "PN-HAV-2004-00129",
+      "deedType": "Ancestral Partition",
+      "registrationDate": "2004-08-12",
+      "subRegistrarOffice": "Haveli No. 1",
+      "declaredValueINR": 4500000,
+      "stampDutyPaidINR": 10000,
+      "status": "Partition Mismatch Flagged"
+    },
+    "encumbrance": {
+      "status": "High Risk - Unresolved Court Stay",
+      "mortgageActive": false,
+      "bankName": "None",
+      "mortgageAmountINR": 0,
+      "pendingLitigation": true,
+      "courtCaseNo": "PUN-DIST-COURT-2022-0941",
+      "nocIssued": false
+    },
+    "tax": {
+      "assessmentNo": "PMC-TAX-2024-44102",
+      "annualTaxINR": 64000,
+      "duesRemainingINR": 192000,
+      "status": "Unpaid Dues (3 Years)",
+      "lastPaymentDate": "2021-02-14",
+      "receiptNo": "REC-002910"
+    },
+    "landUse": {
+      "zone": "Agricultural (A-1) to be Converted",
+      "masterPlan": "PMC Master Plan 2038",
+      "permissibleFSI": 0.5,
+      "category": "Agricultural / No Development Zone"
+    },
+    "buildingPermission": {
+      "permissionNo": "N/A",
+      "status": "Not Applied",
+      "approvedFSI": 0.0,
+      "sanctionedFloors": "N/A",
+      "completionCertificateIssued": false
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 50,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "Proposed Metro Corridor Alignment Buffer"
+    },
+    "utilities": {
+      "waterConnectionId": "Not Connected",
+      "powerConsumerNo": "MSEDCL-AGRI-1029",
+      "sewageAccess": "None",
+      "roadWidthMeters": 9
+    }
+  },
+  {
+    "ulpin": "IN-MH-411001-P1008",
+    "surveyNo": "104/3/A",
+    "village": "Bavdhan",
+    "taluka": "Mulshi",
+    "district": "Pune",
+    "state": "Maharashtra",
+    "areaSqM": 1900.00,
+    "areaAcres": 0.469,
+    "pincode": "411021",
+    "status": "Verified",
+    "coordinates": [
+      [18.5120, 73.7710],
+      [18.5132, 73.7720],
+      [18.5126, 73.7735],
+      [18.5114, 73.7725],
+      [18.5120, 73.7710]
+    ],
+    "center": [18.5123, 73.7722],
+    "owner": {
+      "name": "Dr. Sameer Vinayak Kulkarni",
+      "fatherName": "Vinayak Kulkarni",
+      "khataNo": "KHT-3012",
+      "sharePercentage": 100,
+      "jointOwners": [],
+      "address": "NDA Road, Bavdhan, Pune",
+      "aadhaarMasked": "XXXX-XXXX-9012",
+      "panMasked": "ABSPK****E"
+    },
+    "registration": {
+      "deedNo": "PN-MUL-2019-77102",
+      "deedType": "Sale Deed",
+      "registrationDate": "2019-10-24",
+      "subRegistrarOffice": "Mulshi No. 1",
+      "declaredValueINR": 21000000,
+      "stampDutyPaidINR": 1260000,
+      "status": "Registered & Verified"
+    },
+    "encumbrance": {
+      "status": "Clear",
+      "mortgageActive": false,
+      "bankName": "None",
+      "mortgageAmountINR": 0,
+      "pendingLitigation": false,
+      "courtCaseNo": null,
+      "nocIssued": true
+    },
+    "tax": {
+      "assessmentNo": "PMC-TAX-2024-88192",
+      "annualTaxINR": 58000,
+      "duesRemainingINR": 0,
+      "status": "Paid",
+      "lastPaymentDate": "2024-04-15",
+      "receiptNo": "REC-991024"
+    },
+    "landUse": {
+      "zone": "Residential (R-2)",
+      "masterPlan": "PMC Master Plan 2038",
+      "permissibleFSI": 2.0,
+      "category": "Medium Density Residential"
+    },
+    "buildingPermission": {
+      "permissionNo": "PMC-BP-2021-33102",
+      "status": "Approved",
+      "approvedFSI": 1.9,
+      "sanctionedFloors": "G + 5",
+      "completionCertificateIssued": true
+    },
+    "restrictions": {
+      "crzZone": "Non-CRZ",
+      "highwayBufferMeters": 0,
+      "heritageBuffer": false,
+      "forestLand": false,
+      "status": "Hill Slope Zone NOC Attached"
+    },
+    "utilities": {
+      "waterConnectionId": "PMC-WTR-55102",
+      "powerConsumerNo": "MSEDCL-661029",
+      "sewageAccess": "Connected",
+      "roadWidthMeters": 18
+    }
+  }
+]
