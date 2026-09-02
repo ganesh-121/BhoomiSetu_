@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="BhoomiSetu - Unified ULPIN-Based GIS Parcel Land Information Platform for SIH Problem Statement 26014.">
+  <title>BhoomiSetu | One Parcel. Complete Information. (SIH 26014)</title>
+
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- FontAwesome 6 Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+  <!-- Leaflet GIS Map CSS & JS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#0284c7', 600: '#0369a1', 700: '#075985' }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Outfit', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body { background-color: #060b18; color: #f1f5f9; }
+    .gis-map-canvas, .leaflet-container {
+      width: 100% !important;
+      height: 100% !important;
+      min-height: 520px !important;
+      background: #090d16 !important;
+      font-family: 'Inter', sans-serif;
+      border-radius: 1rem;
+    }
+    .leaflet-popup-content-wrapper { background: #1e293b !important; color: #f8fafc !important; border-radius: 0.75rem !important; border: 1px solid #334155 !important; }
+    .leaflet-popup-tip { background: #1e293b !important; }
+    .leaflet-control-zoom a { background-color: #1e293b !important; color: #f8fafc !important; border-color: #334155 !important; }
+    
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 25px rgba(6, 182, 212, 0.4); }
+      50% { box-shadow: 0 0 50px rgba(14, 165, 233, 0.7); }
+    }
+    .hero-logo-glow { animation: pulseGlow 3s infinite ease-in-out; }
+
+    @media print {
+      body * { visibility: hidden; }
+      #printable-certificate, #printable-certificate * { visibility: visible; }
+      #printable-certificate { position: absolute; left: 0; top: 0; width: 100%; background: #ffffff !important; color: #0f172a !important; }
+    }
+  </style>
+</head>
+<body class="selection:bg-cyan-500 selection:text-white min-h-screen">
+  <div id="root"></div>
+
+  <!-- React Application Script -->
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Map API token should be configured via environment variable in production
+    const MAP_API_TOKEN = "";
+
+    // Sample GeoJSON Parcel Dataset
+    const INITIAL_PARCELS = [
+      {
+        ulpin: "IN-MH-411001-P1001",
+        surveyNo: "142/A/1",
+        village: "Baner",
+        taluka: "Haveli",
+        district: "Pune",
+        state: "Maharashtra",
+        areaSqM: 1250.50,
+        areaAcres: 0.309,
+        pincode: "411045",
+        status: "Verified",
+        coordinates: [[18.5585, 73.7890], [18.5592, 73.7895], [18.5588, 73.7905], [18.5581, 73.7900], [18.5585, 73.7890]],
+        center: [18.55865, 73.78975],
+        owner: { name: "Rajesh Vasantrao Patil", fatherName: "Vasantrao Patil", khataNo: "KHT-8842", sharePercentage: 100, jointOwners: [], address: "Flat 402, Green Acres, Baner, Pune", aadhaarMasked: "XXXX-XXXX-9482", panMasked: "ABPPP****K" },
+        registration: { deedNo: "PN-HAV-2021-49201", deedType: "Sale Deed", registrationDate: "2021-11-14", subRegistrarOffice: "Haveli No. 3, Pune", declaredValueINR: 18500000, stampDutyPaidINR: 1110000, status: "Registered & Verified" },
+        encumbrance: { status: "Clear", mortgageActive: false, bankName: "None", mortgageAmountINR: 0, pendingLitigation: false, courtCaseNo: null, nocIssued: true },
+        tax: { assessmentNo: "PMC-TAX-2024-99120", annualTaxINR: 42500, duesRemainingINR: 0, status: "Paid", lastPaymentDate: "2024-04-10", receiptNo: "REC-8849120" },
+        landUse: { zone: "Residential (R-1)", masterPlan: "PMC Master Plan 2038", permissibleFSI: 2.1, category: "Urban Residential" },
+        buildingPermission: { permissionNo: "PMC-BP-2022-04812", status: "Approved", approvedFSI: 1.95, sanctionedFloors: "G + 4", completionCertificateIssued: true },
+        restrictions: { crzZone: "Non-CRZ", highwayBufferMeters: 15, heritageBuffer: false, forestLand: false, status: "No Active Restrictions" },
+        utilities: { waterConnectionId: "PMC-WTR-49102", powerConsumerNo: "MSEDCL-849201", sewageAccess: "Connected", roadWidthMeters: 18 }
+      },
+      {
+        ulpin: "IN-MH-411001-P1002",
+        surveyNo: "88/2/B",
+        village: "Aundh",
+        taluka: "Haveli",
+        district: "Pune",
+        state: "Maharashtra",
+        areaSqM: 3400.00,
+        areaAcres: 0.840,
+        pincode: "411007",
+        status: "Issue Found",
+        coordinates: [[18.5610, 73.8050], [18.5622, 73.8062], [18.5615, 73.8075], [18.5602, 73.8060], [18.5610, 73.8050]],
+        center: [18.5612, 73.8061],
+        owner: { name: "Sunita Suresh Deshmukh", fatherName: "Rameshchandra Kulkarni", khataNo: "KHT-4912", sharePercentage: 60, jointOwners: ["Milind Suresh Deshmukh (40%)"], address: "Lane 5, Aundh, Pune", aadhaarMasked: "XXXX-XXXX-1294", panMasked: "BCDPD****M" },
+        registration: { deedNo: "PN-HAV-2018-12049", deedType: "Gift Deed", registrationDate: "2018-06-22", subRegistrarOffice: "Haveli No. 1, Pune", declaredValueINR: 32000000, stampDutyPaidINR: 1920000, status: "Registered" },
+        encumbrance: { status: "Active Mortgage & Dispute Flag", mortgageActive: true, bankName: "State Bank of India (Aundh Br)", mortgageAmountINR: 15000000, pendingLitigation: true, courtCaseNo: "CIV-SUIT-2023-8841", nocIssued: false },
+        tax: { assessmentNo: "PMC-TAX-2024-10492", annualTaxINR: 115000, duesRemainingINR: 230000, status: "Unpaid Dues", lastPaymentDate: "2022-03-15", receiptNo: "REC-4819201" },
+        landUse: { zone: "Commercial (C-2)", masterPlan: "PMC Master Plan 2038", permissibleFSI: 2.5, category: "Commercial Mixed Use" },
+        buildingPermission: { permissionNo: "PMC-BP-2023-99120", status: "Violation Found", approvedFSI: 2.5, sanctionedFloors: "G + 6", completionCertificateIssued: false },
+        restrictions: { crzZone: "Non-CRZ", highwayBufferMeters: 0, heritageBuffer: false, forestLand: false, status: "Litigation Encroachment Flag" },
+        utilities: { waterConnectionId: "PMC-WTR-11920", powerConsumerNo: "MSEDCL-481029", sewageAccess: "Pending Clearance", roadWidthMeters: 24 }
+      },
+      {
+        ulpin: "IN-MH-411001-P1003",
+        surveyNo: "204/1",
+        village: "Wakad",
+        taluka: "Mulshi",
+        district: "Pune",
+        state: "Maharashtra",
+        areaSqM: 850.00,
+        areaAcres: 0.210,
+        pincode: "411057",
+        status: "Verified",
+        coordinates: [[18.5980, 73.7620], [18.5986, 73.7625], [18.5983, 73.7634], [18.5976, 73.7629], [18.5980, 73.7620]],
+        center: [18.5981, 73.7627],
+        owner: { name: "Anil Prakash Kulkarni", fatherName: "Prakash Kulkarni", khataNo: "KHT-7712", sharePercentage: 100, jointOwners: [], address: "Datta Mandir Road, Wakad, Pune", aadhaarMasked: "XXXX-XXXX-4410", panMasked: "CJKPK****L" },
+        registration: { deedNo: "PN-MUL-2022-88192", deedType: "Sale Deed", registrationDate: "2022-09-05", subRegistrarOffice: "Mulshi No. 2", declaredValueINR: 9500000, stampDutyPaidINR: 570000, status: "Registered & Verified" },
+        encumbrance: { status: "Clear", mortgageActive: false, bankName: "None", mortgageAmountINR: 0, pendingLitigation: false, courtCaseNo: null, nocIssued: true },
+        tax: { assessmentNo: "PCMC-TAX-2024-33102", annualTaxINR: 28000, duesRemainingINR: 0, status: "Paid", lastPaymentDate: "2024-05-18", receiptNo: "REC-773102" },
+        landUse: { zone: "Residential (R-1)", masterPlan: "PCMC Development Plan", permissibleFSI: 1.8, category: "High Density Residential" },
+        buildingPermission: { permissionNo: "PCMC-BP-2023-11029", status: "Approved", approvedFSI: 1.75, sanctionedFloors: "G + 3", completionCertificateIssued: true },
+        restrictions: { crzZone: "Non-CRZ", highwayBufferMeters: 30, heritageBuffer: false, forestLand: false, status: "Clear" },
+        utilities: { waterConnectionId: "PCMC-WTR-88129", powerConsumerNo: "MSEDCL-993012", sewageAccess: "Connected", roadWidthMeters: 15 }
+      },
+      {
+        ulpin: "IN-MH-411001-P1004",
+        surveyNo: "52/A",
+        village: "Hinjawadi",
+        taluka: "Mulshi",
+        district: "Pune",
+        state: "Maharashtra",
+        areaSqM: 6200.00,
+        areaAcres: 1.532,
+        pincode: "411057",
+        status: "Pending Clearance",
+        coordinates: [[18.5910, 73.7380], [18.5925, 73.7395], [18.5918, 73.7410], [18.5902, 73.7396], [18.5910, 73.7380]],
+        center: [18.5913, 73.7395],
+        owner: { name: "Apex Tech Infra Solutions Pvt Ltd", fatherName: "N/A (Corporate)", khataNo: "KHT-9901", sharePercentage: 100, jointOwners: [], address: "Phase 1, Hinjawadi Rajiv Gandhi IT Park, Pune", aadhaarMasked: "N/A (CIN: U72200PN2015PTC159012)", panMasked: "AAACA****G" },
+        registration: { deedNo: "PN-MUL-2020-00412", deedType: "Lease Deed", registrationDate: "2020-02-11", subRegistrarOffice: "Mulshi No. 1", declaredValueINR: 145000000, stampDutyPaidINR: 8700000, status: "Under MIDC Verification" },
+        encumbrance: { status: "Bank Charge Registered", mortgageActive: true, bankName: "HDFC Bank Ltd", mortgageAmountINR: 85000000, pendingLitigation: false, courtCaseNo: null, nocIssued: true },
+        tax: { assessmentNo: "MIDC-TAX-2024-88410", annualTaxINR: 480000, duesRemainingINR: 0, status: "Paid", lastPaymentDate: "2024-06-01", receiptNo: "REC-990124" },
+        landUse: { zone: "Industrial / IT Park (I-2)", masterPlan: "MIDC Master Plan", permissibleFSI: 3.5, category: "Information Technology Zone" },
+        buildingPermission: { permissionNo: "MIDC-BP-2021-00812", status: "Approved", approvedFSI: 3.2, sanctionedFloors: "2B + G + 11", completionCertificateIssued: false },
+        restrictions: { crzZone: "Non-CRZ", highwayBufferMeters: 20, heritageBuffer: false, forestLand: false, status: "High Tension Corridor Buffer (10m)" },
+        utilities: { waterConnectionId: "MIDC-WTR-00491", powerConsumerNo: "MSEDCL-HT-44812", sewageAccess: "Connected (STP Required)", roadWidthMeters: 30 }
+      }
+    ];
+
+    function MainApp() {
+      // Default: Initial Splash Pop-up is ACTIVE
+      const [showSplashPopUp, setShowSplashPopUp] = useState(true);
+
+      const [currentUser, setCurrentUser] = useState({
+        isLoggedIn: false,
+        name: "",
+        role: "Guest",
+        id: "",
+        avatarBg: "bg-slate-700"
+      });
+
+      const [view, setView] = useState('landing');
+      const [selectedUlpin, setSelectedUlpin] = useState('IN-MH-411001-P1001');
+      const [parcels] = useState(INITIAL_PARCELS);
+      const [serviceRequests, setServiceRequests] = useState([
+        { id: "REQ-2024-8801", ulpin: "IN-MH-411001-P1001", applicantName: "Rajesh Vasantrao Patil", applicantPhone: "+91 98230 49102", requestType: "Ownership Mutation Record Request", status: "Completed", submittedDate: "2024-08-15", officerRemarks: "Approved by Haveli Circle Officer.", department: "Land Records Department" },
+        { id: "REQ-2024-9104", ulpin: "IN-MH-411001-P1002", applicantName: "Sunita Suresh Deshmukh", applicantPhone: "+91 94220 11920", requestType: "Property Tax Dues Re-assessment", status: "Under Review", submittedDate: "2024-08-28", officerRemarks: "Bank scroll reconciliation pending.", department: "Property Tax Department" }
+      ]);
+
+      const targetParcel = parcels.find(p => p.ulpin === selectedUlpin) || parcels[0];
+
+      // Handle user login and land directly on their specific role workspace
+      const handleLogin = (userRole, name, id) => {
+        setCurrentUser({
+          isLoggedIn: true,
+          role: userRole,
+          name: name,
+          id: id,
+          avatarBg: userRole === 'Admin' ? 'bg-rose-600' : userRole === 'Officer' ? 'bg-amber-600' : 'bg-cyan-600'
+        });
+
+        // Close Splash Pop-up and set view
+        setShowSplashPopUp(false);
+
+        if (userRole === 'Officer') {
+          setView('officer');
+        } else if (userRole === 'Admin') {
+          setView('admin');
+        } else {
+          setView('citizen');
+        }
+      };
+
+      const handleLogout = () => {
+        setCurrentUser({ isLoggedIn: false, name: "", role: "Guest", id: "", avatarBg: "bg-slate-700" });
+        setShowSplashPopUp(true);
+        setView('landing');
+      };
+
+      const navigateToUlpin = (ulpin, targetView = 'details') => {
+        setSelectedUlpin(ulpin);
+        setView(targetView);
+      };
+
+      return (
+        <div className="min-h-screen flex flex-col bg-[#060b18] text-slate-100 font-sans relative">
+          
+          {/* Header Navbar */}
+          <header className="sticky top-0 z-40 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 shadow-xl">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+              
+              {/* Logo Emblem */}
+              <div onClick={() => setView('landing')} className="flex items-center space-x-3 cursor-pointer group">
+                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 p-0.5 shadow-lg shadow-cyan-500/20">
+                  <div className="w-full h-full bg-slate-900 rounded-[10px] flex items-center justify-center text-cyan-400 font-bold">
+                    <i className="fa-solid fa-layer-group text-lg"></i>
+                  </div>
+                </div>
+                <div>
+                  <div className="flex items-center space-x-2">
+                    <span className="font-display font-extrabold text-xl tracking-tight bg-gradient-to-r from-white via-slate-100 to-cyan-300 bg-clip-text text-transparent">
+                      BhoomiSetu
+                    </span>
+                    <span className="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+                      SIH 26014
+                    </span>
+                  </div>
+                  <p className="text-[10px] text-slate-400 font-medium">One Parcel. Complete Information.</p>
+                </div>
+              </div>
+
+              {/* Navigation Menu */}
+              {currentUser.isLoggedIn && (
+                <nav className="hidden md:flex items-center space-x-1">
+                  <button onClick={() => setView('landing')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${view === 'landing' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-slate-300 hover:bg-slate-800'}`}>
+                    <i className="fa-solid fa-globe mr-1.5"></i>Overview
+                  </button>
+                  <button onClick={() => setView('map')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${view === 'map' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-slate-300 hover:bg-slate-800'}`}>
+                    <i className="fa-solid fa-map-location-dot mr-1.5"></i>Interactive GIS Map
+                  </button>
+                  <button onClick={() => setView('verify')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${view === 'verify' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-slate-300 hover:bg-slate-800'}`}>
+                    <i className="fa-solid fa-shield-halved mr-1.5"></i>Verify Property
+                  </button>
+
+                  {currentUser.role === 'Citizen' && (
+                    <button onClick={() => setView('citizen')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${view === 'citizen' ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/30' : 'text-slate-300 hover:bg-slate-800'}`}>
+                      <i className="fa-solid fa-user-check mr-1.5"></i>Citizen Portal
+                    </button>
+                  )}
+
+                  {currentUser.role === 'Officer' && (
+                    <button onClick={() => setView('officer')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${view === 'officer' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' : 'text-slate-300 hover:bg-slate-800'}`}>
+                      <i className="fa-solid fa-building-user mr-1.5"></i>Officer Desk
+                    </button>
+                  )}
+
+                  {currentUser.role === 'Admin' && (
+                    <button onClick={() => setView('admin')} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${view === 'admin' ? 'bg-rose-500/20 text-rose-300 border border-rose-500/30' : 'text-slate-300 hover:bg-slate-800'}`}>
+                      <i className="fa-solid fa-sliders mr-1.5"></i>Admin Panel
+                    </button>
+                  )}
+                </nav>
+              )}
+
+              {/* Profile / Login Header Bar */}
+              <div className="flex items-center space-x-3">
+                {currentUser.isLoggedIn ? (
+                  <div className="flex items-center space-x-3 bg-slate-950 p-1.5 pr-2.5 rounded-xl border border-slate-800">
+                    <div className={`w-8 h-8 rounded-lg ${currentUser.avatarBg} text-white font-bold flex items-center justify-center text-xs shadow`}>
+                      {currentUser.name.charAt(0)}
+                    </div>
+                    <div className="text-left hidden sm:block">
+                      <p className="text-xs font-bold text-white leading-tight">{currentUser.name}</p>
+                      <span className="text-[10px] text-cyan-400 font-mono">{currentUser.role} ({currentUser.id})</span>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="px-2.5 py-1 bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-bold transition-all flex items-center space-x-1 ml-2"
+                      title="Logout Session"
+                    >
+                      <i className="fa-solid fa-right-from-bracket"></i>
+                      <span className="hidden sm:inline">Logout</span>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => setShowSplashPopUp(true)}
+                    className="px-4 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-cyan-900/30"
+                  >
+                    <i className="fa-solid fa-right-to-bracket mr-1.5"></i>BhoomiSetu Entrance
+                  </button>
+                )}
+              </div>
+
+            </div>
+          </header>
+
+          {/* MAIN APP CONTENT */}
+          <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1 w-full">
+            
+            {/* INITIAL BHOOMISETU HERO POP-UP SPLASH MODAL */}
+            {showSplashPopUp && (
+              <BhoomiSetuHeroSplashPopUp onLogin={handleLogin} onClose={() => setShowSplashPopUp(false)} />
+            )}
+
+            {/* NORMAL WEBSITE CONTENT & WORKSPACE DASHBOARDS */}
+            {view === 'landing' && (
+              <div className="space-y-12 pb-12">
+                <div className="text-center max-w-4xl mx-auto space-y-6 pt-4">
+                  <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 text-xs font-semibold">
+                    <i className="fa-solid fa-bolt"></i>
+                    <span>SIH Problem Statement 26014 Solution</span>
+                  </div>
+
+                  <h1 className="text-4xl sm:text-6xl font-display font-extrabold tracking-tight text-white leading-tight">
+                    One Parcel. <br />
+                    <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">
+                      Complete Information.
+                    </span>
+                  </h1>
+
+                  <p className="text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                    BhoomiSetu unifies fragmented land records across Sub-Registrars, Municipal Tax, RoR Land Records, Master Plan Zoning, and Environmental Authorities using <strong>ULPIN</strong>.
+                  </p>
+
+                  <div className="flex flex-wrap justify-center gap-4 pt-2">
+                    <button onClick={() => setView('map')} className="px-6 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold rounded-xl text-xs shadow-lg shadow-cyan-900/30 flex items-center space-x-2">
+                      <i className="fa-solid fa-map-location-dot"></i><span>Explore Interactive GIS Map</span>
+                    </button>
+                    <button onClick={() => setView('verify')} className="px-6 py-3 bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 font-bold rounded-xl text-xs flex items-center space-x-2">
+                      <i className="fa-solid fa-shield-check text-emerald-400"></i><span>Verify Property ("Verify Before You Buy")</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {view === 'map' && <GisMapViewComponent parcels={parcels} onSelect={(u) => navigateToUlpin(u, 'details')} onVerify={(u) => navigateToUlpin(u, 'verify')} />}
+
+            {view === 'details' && <ParcelDetailsComponent parcel={targetParcel} onVerify={() => setView('verify')} />}
+
+            {view === 'verify' && <PropertyVerificationComponent parcel={targetParcel} />}
+
+            {view === 'citizen' && <CitizenDashboardComponent currentUser={currentUser} parcels={parcels} requests={serviceRequests} onRequestAdd={(req) => setServiceRequests([req, ...serviceRequests])} onSelectParcel={(u) => navigateToUlpin(u, 'details')} />}
+
+            {view === 'officer' && <OfficerDashboardComponent currentUser={currentUser} parcels={parcels} requests={serviceRequests} onUpdateReq={(id, status, remarks) => {
+              setServiceRequests(serviceRequests.map(r => r.id === id ? { ...r, status, officerRemarks: remarks } : r));
+            }} onInspectParcel={(u) => navigateToUlpin(u, 'details')} />}
+
+            {view === 'admin' && <AdminDashboardComponent currentUser={currentUser} />}
+
+          </main>
+
+          {/* Footer */}
+          <footer className="bg-slate-950 border-t border-slate-800 py-6 text-xs text-slate-400 mt-auto z-10">
+            <div className="max-w-7xl mx-auto px-4 text-center">
+              <p className="font-bold text-slate-300">BhoomiSetu — Modular Web GIS Platform for SIH Problem Statement 26014</p>
+              <p className="text-[11px] text-slate-500 mt-1">One Parcel. Complete Information. ULPIN Spatial Framework Prototype.</p>
+            </div>
+          </footer>
+
+        </div>
+      );
+    }
+
+    // --- INITIAL BHOOMISETU HERO POP-UP SPLASH MODAL --- //
+    function BhoomiSetuHeroSplashPopUp({ onLogin, onClose }) {
+      const [activeTab, setActiveTab] = useState('Citizen');
+
+      return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/95 backdrop-blur-xl overflow-y-auto">
+          <div className="bg-slate-900 border border-cyan-500/30 rounded-3xl p-6 sm:p-10 max-w-2xl w-full shadow-2xl space-y-8 relative my-8 text-center hero-logo-glow">
+            
+            {/* Close Cross Button */}
+            <button
+              onClick={onClose}
+              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center text-xs font-bold transition-all"
+              title="Close Splash"
+            >
+              <i className="fa-solid fa-xmark text-sm"></i>
+            </button>
+
+            {/* BHOOMISETU PROMINENT HERO EMBLEM & TITLE */}
+            <div className="space-y-4">
+              <div className="w-20 h-20 rounded-3xl bg-gradient-to-tr from-cyan-500 via-sky-400 to-blue-600 p-1 mx-auto shadow-2xl shadow-cyan-500/40 flex items-center justify-center">
+                <div className="w-full h-full bg-slate-950 rounded-[22px] flex items-center justify-center text-cyan-400 text-3xl font-extrabold">
+                  <i className="fa-solid fa-layer-group"></i>
+                </div>
+              </div>
+
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-display font-black tracking-tight text-white uppercase">
+                  Bhoomi<span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">Setu</span>
+                </h1>
+                <div className="flex items-center justify-center space-x-2 mt-2">
+                  <span className="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-3 py-1 rounded-full border border-cyan-500/30 uppercase tracking-widest">
+                    SIH Problem Statement 26014
+                  </span>
+                </div>
+              </div>
+
+              <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+                <strong>One Parcel. Complete Information.</strong> <br />
+                The unified digital spatial bridge linking ULPIN to 7/12 RoR, Title Deeds, Property Tax, Master Plan Zoning, and Encumbrances.
+              </p>
+            </div>
+
+            {/* FAST ENTRANCE PRESET CARDS */}
+            <div className="space-y-3 pt-2">
+              <span className="text-xs text-slate-400 font-bold uppercase tracking-wider block">
+                Select Your Role Portal to Enter:
+              </span>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                
+                {/* Citizen Card */}
+                <div
+                  onClick={() => onLogin('Citizen', 'Rajesh Vasantrao Patil', 'CITIZEN-8842')}
+                  className="bg-slate-800/80 hover:bg-slate-800 border border-cyan-500/30 hover:border-cyan-400 p-4 rounded-2xl cursor-pointer text-left transition-all hover:scale-[1.02] shadow-lg group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-cyan-600/20 text-cyan-400 flex items-center justify-center font-bold text-base mb-2 group-hover:bg-cyan-500 group-hover:text-white transition-all">
+                    <i className="fa-solid fa-user"></i>
+                  </div>
+                  <h3 className="font-bold text-white text-sm">Citizen Portal</h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Rajesh V. Patil</p>
+                  <span className="mt-3 block text-[10px] font-bold text-cyan-400 group-hover:underline">Enter Workspace &rarr;</span>
+                </div>
+
+                {/* Officer Card */}
+                <div
+                  onClick={() => onLogin('Officer', 'Haveli Circle Officer', 'GOV-OFF-411')}
+                  className="bg-slate-800/80 hover:bg-slate-800 border border-amber-500/30 hover:border-amber-400 p-4 rounded-2xl cursor-pointer text-left transition-all hover:scale-[1.02] shadow-lg group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center font-bold text-base mb-2 group-hover:bg-amber-500 group-hover:text-white transition-all">
+                    <i className="fa-solid fa-building-user"></i>
+                  </div>
+                  <h3 className="font-bold text-white text-sm">Officer Desk</h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">Haveli Revenue Officer</p>
+                  <span className="mt-3 block text-[10px] font-bold text-amber-400 group-hover:underline">Enter Desk &rarr;</span>
+                </div>
+
+                {/* Admin Card */}
+                <div
+                  onClick={() => onLogin('Admin', 'State Stack Administrator', 'SYS-ADMIN-01')}
+                  className="bg-slate-800/80 hover:bg-slate-800 border border-rose-500/30 hover:border-rose-400 p-4 rounded-2xl cursor-pointer text-left transition-all hover:scale-[1.02] shadow-lg group"
+                >
+                  <div className="w-9 h-9 rounded-xl bg-rose-600/20 text-rose-400 flex items-center justify-center font-bold text-base mb-2 group-hover:bg-rose-500 group-hover:text-white transition-all">
+                    <i className="fa-solid fa-sliders"></i>
+                  </div>
+                  <h3 className="font-bold text-white text-sm">Admin Gateway</h3>
+                  <p className="text-[10px] text-slate-400 mt-0.5">System Administrator</p>
+                  <span className="mt-3 block text-[10px] font-bold text-rose-400 group-hover:underline">Enter Control &rarr;</span>
+                </div>
+
+              </div>
+            </div>
+
+            {/* Direct Browse Option */}
+            <div className="pt-2">
+              <button
+                onClick={onClose}
+                className="text-xs text-slate-400 hover:text-cyan-300 font-semibold underline underline-offset-4"
+              >
+                Or Continue to Public Overview & Interactive GIS Map
+              </button>
+            </div>
+
+          </div>
+        </div>
+      );
+    }
+
+    // --- GIS MAP COMPONENT --- //
+    function GisMapViewComponent({ parcels, onSelect, onVerify }) {
+      const [selected, setSelected] = useState(parcels[0]);
+      const [locationQuery, setLocationQuery] = useState('');
+      const [mapTileStyle, setMapTileStyle] = useState('dark');
+      const [layerState, setLayerState] = useState({
+        baseCadastral: true,
+        governanceStatus: true,
+        utilitiesGrid: true
+      });
+
+      const mapRef = useRef(null);
+      const leafletInstance = useRef(null);
+      const polygonLayers = useRef([]);
+
+      const filteredParcels = parcels.filter(p => 
+        p.village.toLowerCase().includes(locationQuery.toLowerCase()) ||
+        p.ulpin.toLowerCase().includes(locationQuery.toLowerCase()) ||
+        p.surveyNo.toLowerCase().includes(locationQuery.toLowerCase()) ||
+        p.owner.name.toLowerCase().includes(locationQuery.toLowerCase())
+      );
+
+      const handleLocationSearchSubmit = (e) => {
+        e.preventDefault();
+        if (filteredParcels.length > 0) {
+          flyToParcel(filteredParcels[0]);
+        }
+      };
+
+      useEffect(() => {
+        if (!window.L || !mapRef.current) return;
+        const L = window.L;
+
+        if (leafletInstance.current) {
+          leafletInstance.current.remove();
+        }
+
+        const map = L.map(mapRef.current, {
+          center: [18.55, 73.80],
+          zoom: 12,
+          zoomControl: true
+        });
+
+        leafletInstance.current = map;
+
+        let tileUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+        if (mapTileStyle === 'dark') {
+          tileUrl = `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png`;
+        } else if (mapTileStyle === 'satellite') {
+          tileUrl = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}`;
+        }
+
+        L.tileLayer(tileUrl, {
+          maxZoom: 19,
+          attribution: '&copy; BhoomiSetu Spatial Infrastructure'
+        }).addTo(map);
+
+        polygonLayers.current = [];
+
+        parcels.forEach(p => {
+          let color = p.status === 'Verified' ? '#059669' : p.status === 'Issue Found' ? '#e11d48' : '#d97706';
+          
+          const poly = L.polygon(p.coordinates, {
+            color: color,
+            fillColor: color,
+            fillOpacity: layerState.governanceStatus ? (selected.ulpin === p.ulpin ? 0.75 : 0.4) : 0.15,
+            weight: selected.ulpin === p.ulpin ? 4 : 2,
+            dashArray: layerState.utilitiesGrid ? '4, 4' : null
+          }).addTo(map);
+
+          poly.bindPopup(`
+            <div style="padding: 4px;">
+              <span style="font-size: 10px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">ULPIN: ${p.ulpin}</span>
+              <div style="font-size: 13px; font-weight: 700; color: #ffffff; margin-top: 2px;">Survey No: ${p.surveyNo} (${p.village})</div>
+              <div style="font-size: 11px; color: #94a3b8; margin-top: 4px;">Owner: <b>${p.owner.name}</b></div>
+              <div style="font-size: 11px; color: #94a3b8;">Area: <b>${p.areaSqM} m²</b> (${p.areaAcres} Acres)</div>
+              <div style="margin-top: 6px; padding: 2px 6px; font-size: 10px; font-weight: 700; border-radius: 4px; display: inline-block; background-color: ${color}33; color: ${color}; border: 1px solid ${color}66;">
+                Status: ${p.status}
+              </div>
+            </div>
+          `);
+
+          poly.on('click', () => setSelected(p));
+          polygonLayers.current.push({ ulpin: p.ulpin, poly });
+        });
+
+        setTimeout(() => {
+          if (map) map.invalidateSize();
+        }, 250);
+
+        return () => {
+          if (leafletInstance.current) {
+            leafletInstance.current.remove();
+            leafletInstance.current = null;
+          }
+        };
+      }, [parcels, mapTileStyle, layerState]);
+
+      const flyToParcel = (p) => {
+        setSelected(p);
+        if (leafletInstance.current && window.L) {
+          leafletInstance.current.setView(p.center, 16, { animate: true });
+        }
+      };
+
+      return (
+        <div className="space-y-4">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-2xl">
+            <div>
+              <h2 className="text-xl font-bold text-white flex items-center space-x-2">
+                <i className="fa-solid fa-map-location-dot text-cyan-400"></i>
+                <span>Interactive Cadastral GIS Map</span>
+              </h2>
+              <p className="text-xs text-slate-400">Type location (Baner, Aundh, Wakad, Hinjawadi) to locate plot.</p>
+            </div>
+
+            <form onSubmit={handleLocationSearchSubmit} className="flex gap-2 w-full md:w-auto flex-1 max-w-md">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Search exact location (e.g. Baner, Aundh, Wakad)..."
+                  value={locationQuery}
+                  onChange={(e) => setLocationQuery(e.target.value)}
+                  className="w-full pl-9 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+                />
+                <i className="fa-solid fa-magnifying-glass text-slate-400 absolute left-3 top-3 text-xs"></i>
+              </div>
+              <button
+                type="submit"
+                className="px-4 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs shadow flex items-center space-x-1"
+              >
+                <span>Find Plot</span>
+              </button>
+            </form>
+
+            <div className="flex items-center space-x-2 text-xs bg-slate-950 p-1 rounded-xl border border-slate-800">
+              <button onClick={() => setMapTileStyle('dark')} className={`px-2.5 py-1 rounded-lg font-bold transition-all ${mapTileStyle === 'dark' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'}`}>Dark</button>
+              <button onClick={() => setMapTileStyle('streets')} className={`px-2.5 py-1 rounded-lg font-bold transition-all ${mapTileStyle === 'streets' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'}`}>Streets</button>
+              <button onClick={() => setMapTileStyle('satellite')} className={`px-2.5 py-1 rounded-lg font-bold transition-all ${mapTileStyle === 'satellite' ? 'bg-cyan-600 text-white' : 'text-slate-400 hover:text-white'}`}>Satellite</button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-[580px]">
+            <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-2xl relative min-h-[520px]">
+              <div className="absolute top-4 left-4 z-[400] bg-slate-900/90 p-3 rounded-xl border border-slate-700/80 shadow-2xl backdrop-blur-md text-xs space-y-2 max-w-xs">
+                <div className="font-bold text-white pb-1 border-b border-slate-700 flex items-center space-x-1.5"><i className="fa-solid fa-layer-group text-cyan-400"></i><span>GIS Layer Controls</span></div>
+                <label className="flex items-center space-x-2 text-slate-200 cursor-pointer"><input type="checkbox" checked={layerState.baseCadastral} onChange={(e) => setLayerState({ ...layerState, baseCadastral: e.target.checked })} className="rounded text-cyan-500 bg-slate-800" /><span>Cadastral Boundaries</span></label>
+                <label className="flex items-center space-x-2 text-slate-200 cursor-pointer"><input type="checkbox" checked={layerState.governanceStatus} onChange={(e) => setLayerState({ ...layerState, governanceStatus: e.target.checked })} className="rounded text-cyan-500 bg-slate-800" /><span>Governance Status Colors</span></label>
+                <label className="flex items-center space-x-2 text-slate-200 cursor-pointer"><input type="checkbox" checked={layerState.utilitiesGrid} onChange={(e) => setLayerState({ ...layerState, utilitiesGrid: e.target.checked })} className="rounded text-cyan-500 bg-slate-800" /><span>Utilities Grid</span></label>
+              </div>
+
+              <div ref={mapRef} className="gis-map-canvas"></div>
+            </div>
+
+            <div className="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-2xl overflow-y-auto space-y-4 text-xs">
+              <div>
+                <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block mb-1.5">Locate Land Plot:</span>
+                <div className="flex flex-wrap gap-1.5">
+                  {filteredParcels.map(p => (
+                    <button key={p.ulpin} onClick={() => flyToParcel(p)} className={`px-2.5 py-1.5 rounded-lg font-mono font-bold text-[11px] transition-all flex items-center space-x-1 ${selected.ulpin === p.ulpin ? 'bg-cyan-500 text-white shadow' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}>
+                      <span>{p.village}</span><span className="text-[9px] opacity-75">({p.surveyNo})</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-3 border-t border-slate-800 space-y-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="font-mono text-cyan-400 font-bold uppercase text-[10px] bg-cyan-500/10 px-2 py-0.5 rounded">ULPIN {selected.ulpin}</span>
+                    <h3 className="text-lg font-bold text-white mt-1">Survey No. {selected.surveyNo}</h3>
+                    <p className="text-slate-400">Village {selected.village}, {selected.district}</p>
+                  </div>
+                  <span className={`px-2.5 py-1 rounded-full font-bold text-[10px] ${selected.status === 'Verified' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}`}>{selected.status}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 text-[11px]">
+                  <div className="bg-slate-800 p-2.5 rounded-xl"><span className="text-slate-400">Plot Area:</span><strong className="block text-white text-xs">{selected.areaSqM} m² ({selected.areaAcres} Acres)</strong></div>
+                  <div className="bg-slate-800 p-2.5 rounded-xl"><span className="text-slate-400">Zoning Zone:</span><strong className="block text-cyan-300 text-xs truncate">{selected.landUse.zone}</strong></div>
+                </div>
+
+                <div className="bg-slate-800/40 p-3 rounded-xl space-y-1 border border-slate-800">
+                  <span className="font-bold text-slate-200">Owner (7/12):</span>
+                  <p className="text-sm font-bold text-white">{selected.owner.name}</p>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <button onClick={() => onSelect(selected.ulpin)} className="w-full py-2.5 bg-cyan-600 text-white font-bold rounded-xl text-xs shadow-lg"><i className="fa-solid fa-eye mr-1"></i>View 8-Domain Plot Details</button>
+                  <button onClick={() => onVerify(selected.ulpin)} className="w-full py-2.5 bg-emerald-600/20 text-emerald-300 border border-emerald-500/30 font-bold rounded-xl text-xs"><i className="fa-solid fa-shield-halved mr-1"></i>Run Verification Audit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- CITIZEN DASHBOARD --- //
+    function CitizenDashboardComponent({ currentUser, parcels, requests, onRequestAdd, onSelectParcel }) {
+      const [showModal, setShowModal] = useState(false);
+      const [form, setForm] = useState({ ulpin: "IN-MH-411001-P1001", applicantName: currentUser.name, requestType: "Ownership Mutation Record Request" });
+
+      return (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
+            <div>
+              <span className="text-xs font-bold text-cyan-400 bg-cyan-500/10 px-2.5 py-1 rounded border border-cyan-500/20">CITIZEN PORTAL DASHBOARD</span>
+              <h2 className="text-2xl font-bold text-white mt-1">Welcome, {currentUser.name}</h2>
+              <p className="text-xs text-slate-400">View registered land parcels, property verification reports, and service requests.</p>
+            </div>
+            <button onClick={() => setShowModal(true)} className="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white font-bold rounded-xl text-xs shadow-lg"><i className="fa-solid fa-plus mr-1.5"></i>Submit Request</button>
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 shadow-xl">
+            <h3 className="font-bold text-white text-sm">Your Registered Land Parcels (RoR 7/12)</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              {parcels.slice(0, 2).map(p => (
+                <div key={p.ulpin} className="bg-slate-800/60 p-4 rounded-xl border border-slate-700/60 space-y-2">
+                  <div className="flex justify-between items-center"><span className="font-mono font-bold text-cyan-400">{p.ulpin}</span><span className="bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded font-bold text-[10px]">{p.status}</span></div>
+                  <div><p className="font-bold text-white text-sm">Survey No. {p.surveyNo} ({p.village})</p><p className="text-slate-400">Area: {p.areaSqM} m² | Owner: {p.owner.name}</p></div>
+                  <div className="pt-2"><button onClick={() => onSelectParcel(p.ulpin)} className="w-full py-1.5 bg-slate-700 text-slate-200 rounded-lg font-bold">View 8-Domain Details</button></div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // --- OFFICER DASHBOARD --- //
+    function OfficerDashboardComponent({ currentUser, parcels, requests, onUpdateReq, onInspectParcel }) {
+      return (
+        <div className="space-y-6">
+          <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex justify-between items-center shadow-xl">
+            <div>
+              <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded border border-amber-500/20">GOVERNMENT OFFICER DESK WORKSPACE</span>
+              <h2 className="text-2xl font-bold text-white mt-1">Haveli & Mulshi Circle Officer Workspace</h2>
+              <p className="text-xs text-slate-400">Logged in as: {currentUser.name} ({currentUser.id})</p>
+            </div>
+          </div>
+
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4 text-xs shadow-xl">
+            <h3 className="font-bold text-white text-sm">Pending Applications Queue</h3>
+            <table className="w-full text-left">
+              <thead className="bg-slate-800 text-slate-400 font-bold uppercase">
+                <tr><th className="p-3">Req ID</th><th className="p-3">ULPIN</th><th className="p-3">Applicant</th><th className="p-3">Status</th><th className="p-3">Action</th></tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800">
+                {requests.map(r => (
+                  <tr key={r.id}>
+                    <td className="p-3 font-mono font-bold text-cyan-400">{r.id}</td>
+                    <td className="p-3 font-mono text-slate-300">{r.ulpin}</td>
+                    <td className="p-3 font-bold text-white">{r.applicantName}</td>
+                    <td className="p-3"><span className="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded font-bold">{r.status}</span></td>
+                    <td className="p-3 flex space-x-2">
+                      <button onClick={() => onUpdateReq(r.id, "Approved", "Approved by Officer.")} className="px-3 py-1 bg-emerald-600 text-white rounded font-bold">Approve</button>
+                      <button onClick={() => onInspectParcel(r.ulpin)} className="px-2.5 py-1 bg-slate-800 text-slate-300 rounded font-bold">Inspect</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      );
+    }
+
+    // --- ADMIN DASHBOARD --- //
+    function AdminDashboardComponent({ currentUser }) {
+      return (
+        <div className="space-y-6 text-xs">
+          <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 shadow-xl">
+            <span className="text-xs font-bold text-rose-400 bg-rose-500/10 px-2.5 py-1 rounded">ADMINISTRATOR CONTROL CENTER</span>
+            <h2 className="text-2xl font-bold text-white mt-1">State Department API Gateway & Audit Logs</h2>
+            <p className="text-xs text-slate-400">Logged in as: {currentUser.name} ({currentUser.id})</p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {['Land Records (RoR)', 'Sub-Registrar (Deeds)', 'Municipal Property Tax', 'Urban Zoning Gateway', 'Utility Grid Engine', 'Pollution Control Board'].map((name, i) => (
+              <div key={i} className="bg-slate-900 p-4 rounded-xl border border-slate-800 space-y-2">
+                <span className="font-bold text-white">{name}</span>
+                <p className="text-emerald-400 font-bold">Status: Active (99.8% Uptime)</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // --- PARCEL DETAILS --- //
+    function ParcelDetailsComponent({ parcel, onVerify }) {
+      const [tab, setTab] = useState('ror');
+      return (
+        <div className="space-y-6 text-xs">
+          <div className="bg-slate-900 p-6 rounded-2xl border border-slate-800 flex justify-between items-center">
+            <div>
+              <span className="font-mono text-cyan-400 font-bold text-xs bg-cyan-500/10 px-2.5 py-1 rounded">ULPIN: {parcel.ulpin}</span>
+              <h2 className="text-2xl font-bold text-white mt-1">Survey No. {parcel.surveyNo} — {parcel.village}</h2>
+            </div>
+            <button onClick={onVerify} className="px-5 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs"><i className="fa-solid fa-shield-check mr-1.5"></i>Run Verification Audit</button>
+          </div>
+        </div>
+      );
+    }
+
+    // --- PROPERTY VERIFICATION --- //
+    function PropertyVerificationComponent({ parcel }) {
+      return (
+        <div className="space-y-6 text-xs">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-white">"Verify Before You Buy" Due Diligence Audit</h2>
+            <button onClick={() => window.print()} className="px-4 py-2 bg-slate-800 text-slate-200 rounded-xl font-bold">Print Certificate</button>
+          </div>
+          <div id="printable-certificate" className="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
+            <h3 className="text-xl font-bold text-white">Verification Report — ULPIN {parcel.ulpin}</h3>
+            <p className="text-slate-300">Owner: {parcel.owner.name} | Village: {parcel.village}</p>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<MainApp />);
+  </script>
+</body>
+</html>
